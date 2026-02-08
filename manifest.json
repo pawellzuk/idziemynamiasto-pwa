@@ -2,7 +2,7 @@
   "name": "Idziemy na miasto - Lublin",
   "short_name": "Na miasto",
   "description": "Wydarzenia kulturalne w Lublinie - filmy, wystawy, spektakle, koncerty",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1A1A2E",
   "theme_color": "#E91E63",

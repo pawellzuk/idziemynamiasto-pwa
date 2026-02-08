@@ -1,17 +1,18 @@
 const CACHE_NAME = 'inm-pwa-v1';
+const BASE = self.registration.scope;
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/events.js',
-  '/js/favorites.js',
-  '/js/filters.js',
-  '/js/map.js',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
-  '/img/placeholder.svg',
-  '/manifest.json',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/events.js',
+  './js/favorites.js',
+  './js/filters.js',
+  './js/map.js',
+  './icons/icon-192.svg',
+  './icons/icon-512.svg',
+  './img/placeholder.svg',
+  './manifest.json',
 ];
 
 const CDN_ASSETS = [

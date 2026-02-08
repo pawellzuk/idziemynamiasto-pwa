@@ -18,14 +18,14 @@ const EventsModule = (() => {
   }
 
   function parseEvents(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
     const events = [];
+    // Extract JSON-LD blocks using regex (DOMParser strips script contents)
+    const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+    let match;
 
-    for (const script of scripts) {
+    while ((match = regex.exec(html)) !== null) {
       try {
-        const data = JSON.parse(script.textContent);
+        const data = JSON.parse(match[1]);
         if (data['@type'] === 'ItemList' && Array.isArray(data.itemListElement)) {
           for (const listItem of data.itemListElement) {
             const item = listItem.item;

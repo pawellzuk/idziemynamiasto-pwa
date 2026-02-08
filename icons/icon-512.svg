@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" fill="#E91E63"/>
+  <g transform="translate(256,256)">
+    <!-- City skyline -->
+    <rect x="-160" y="-55" width="55" height="135" rx="4" fill="white" opacity="0.9"/>
+    <rect x="-95" y="-95" width="50" height="175" rx="4" fill="white" opacity="0.85"/>
+    <rect x="-35" y="-120" width="65" height="200" rx="4" fill="white" opacity="0.95"/>
+    <rect x="40" y="-70" width="50" height="150" rx="4" fill="white" opacity="0.85"/>
+    <rect x="100" y="-40" width="55" height="120" rx="4" fill="white" opacity="0.9"/>
+    <!-- Windows -->
+    <rect x="-148" y="-35" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-130" y="-35" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-148" y="-10" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-130" y="-10" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-148" y="15" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-130" y="15" width="10" height="10" rx="2" fill="#E91E63"/>
+    <rect x="-18" y="-95" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="5" y="-95" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="-18" y="-70" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="5" y="-70" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="-18" y="-45" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="5" y="-45" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="-18" y="-20" width="12" height="12" rx="2" fill="#E91E63"/>
+    <rect x="5" y="-20" width="12" height="12" rx="2" fill="#E91E63"/>
+    <!-- Star/sparkle -->
+    <circle cx="90" cy="-145" r="10" fill="#FFD54F"/>
+    <line x1="90" y1="-165" x2="90" y2="-125" stroke="#FFD54F" stroke-width="4"/>
+    <line x1="70" y1="-145" x2="110" y2="-145" stroke="#FFD54F" stroke-width="4"/>
+  </g>
+</svg>

@@ -1,7 +1,11 @@
 /**
- * Events module - fetching and parsing event data from idziemynamiasto.pl
+ * Events module - fetching event data
+ * Primary: static JSON file (data/events.json)
+ * Fallback: CORS proxy to idziemynamiasto.pl
+ * Offline: localStorage cache
  */
 const EventsModule = (() => {
+  const STATIC_DATA_URL = 'data/events.json';
   const API_URL = 'https://idziemynamiasto.pl';
   const CORS_PROXIES = [
     url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -17,9 +21,26 @@ const EventsModule = (() => {
     } catch { return false; }
   }
 
-  function parseEvents(html) {
+  function normalizeType(type) {
+    const t = (type || '').toLowerCase().trim();
+    const known = ['film', 'wystawa', 'spektakl', 'teatr', 'koncert', 'dzieci'];
+    if (known.includes(t)) return t === 'dzieci' ? 'inne' : t;
+    return t || 'inne';
+  }
+
+  function normalizeEvent(e) {
+    return {
+      id: e.id,
+      name: e.name,
+      type: normalizeType(e.type),
+      date: e.date || null,
+      location: (e.location || 'Lublin').trim(),
+      url: (e.url && isValidUrl(e.url)) ? e.url : null,
+    };
+  }
+
+  function parseEventsFromHtml(html) {
     const events = [];
-    // Extract JSON-LD blocks using regex (DOMParser strips script contents)
     const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
     let match;
 
@@ -30,33 +51,28 @@ const EventsModule = (() => {
           for (const listItem of data.itemListElement) {
             const item = listItem.item;
             if (!item || !item.name) continue;
-
-            const eventType = normalizeType(item.eventType || '');
-            const url = isValidUrl(item.url) ? item.url : null;
-
-            events.push({
+            events.push(normalizeEvent({
               id: `evt-${listItem.position || events.length}`,
               name: item.name,
-              type: eventType,
-              date: item.startDate || null,
-              location: item.location?.name?.trim() || 'Lublin',
-              url: url,
-            });
+              type: item.eventType,
+              date: item.startDate,
+              location: item.location?.name,
+              url: item.url,
+            }));
           }
         }
       } catch (e) {
         console.warn('Failed to parse JSON-LD block:', e);
       }
     }
-
     return events;
   }
 
-  function normalizeType(type) {
-    const t = type.toLowerCase().trim();
-    const known = ['film', 'wystawa', 'spektakl', 'teatr', 'koncert', 'dzieci'];
-    if (known.includes(t)) return t === 'dzieci' ? 'inne' : t;
-    return t || 'inne';
+  async function fetchStaticData() {
+    const resp = await fetch(STATIC_DATA_URL, { signal: AbortSignal.timeout(10000) });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    return data.map(normalizeEvent);
   }
 
   async function fetchWithProxy(url, proxyIndex = 0) {
@@ -67,7 +83,10 @@ const EventsModule = (() => {
     try {
       const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      return await resp.text();
+      const html = await resp.text();
+      const events = parseEventsFromHtml(html);
+      if (events.length === 0) throw new Error('No events parsed from proxy');
+      return events;
     } catch (e) {
       console.warn(`Proxy ${proxyIndex} failed:`, e.message);
       return fetchWithProxy(url, proxyIndex + 1);
@@ -99,8 +118,22 @@ const EventsModule = (() => {
       if (cached) return cached;
     }
 
-    const html = await fetchWithProxy(API_URL);
-    const events = parseEvents(html);
+    // Try static JSON first (reliable), then CORS proxy (fresh data)
+    let events = [];
+    try {
+      events = await fetchStaticData();
+    } catch (e) {
+      console.warn('Static data failed:', e.message);
+    }
+
+    // Try proxy for fresher data (non-blocking if static worked)
+    if (events.length === 0) {
+      try {
+        events = await fetchWithProxy(API_URL);
+      } catch (e) {
+        console.warn('Proxy fetch failed:', e.message);
+      }
+    }
 
     if (events.length > 0) {
       setCache(events);
@@ -109,7 +142,6 @@ const EventsModule = (() => {
     return events;
   }
 
-  // Try to get offline data if fetch fails
   function getOfflineEvents() {
     try {
       const raw = localStorage.getItem(CACHE_KEY);

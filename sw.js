@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inm-pwa-v1';
+const CACHE_NAME = 'inm-pwa-v2';
 const BASE = self.registration.scope;
 const STATIC_ASSETS = [
   './',
@@ -13,6 +13,7 @@ const STATIC_ASSETS = [
   './icons/icon-512.svg',
   './img/placeholder.svg',
   './manifest.json',
+  './data/events.json',
 ];
 
 const CDN_ASSETS = [
